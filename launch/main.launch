@@ -1,14 +1,14 @@
 <launch>
-  <node pkg="mavros_merger" type="mavros_merger_node.py" name="mavros_merger" output="screen">
+  <node pkg="mavros_merger" type="mavros_merger_node.py" name="mavros_merger" output="screen" clear_params="true">
      <rosparam param="controllers">
 - node21
 - node22
      </rosparam>
      <rosparam param="drones">
-r0: rover_0
+r1: rover_0
      </rosparam>
   </node>
   <node pkg="mavros" type="gcs_bridge" name="gcs_bridge" output="screen" ns="rover_0">
-     <param name="gcs_url" value="udp://@:14550"/>
+     <param name="gcs_url" value="udp://@192.168.201.59:14550"/>
   </node>
 </launch>

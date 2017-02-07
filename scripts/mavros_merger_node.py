@@ -17,6 +17,7 @@ class Merger(object):
         self.pubs = {}
         self.conn_pubs = {}
         self.connections = {}
+        rospy.loginfo("%s %s", drones, controllers)
 
         for c in controllers:
             c_uri = "{c}/connections".format(**locals())
@@ -26,7 +27,8 @@ class Merger(object):
         for uid, ns in drones.items():
             s_uri = "{uid}/mavlink/from".format(**locals())
             d_uri = "{ns}/mavlink/from".format(**locals())
-            self.pubs[uid] = rospy.Publisher(d_uri, Mavlink, queue_size=5)
+            self.pubs[uid] = [None,
+                              rospy.Publisher(d_uri, Mavlink, queue_size=5)]
             for c in controllers:
                 uri = "{c}/{s_uri}".format(**locals())
                 rospy.Subscriber(uri, Mavlink,
@@ -45,13 +47,19 @@ class Merger(object):
         connections = self.connections[c][0]
 
         def cb(msg):
-            rospy.loginfo("seq {msg.seq:03d}\t"
-                          "status {msg.framing_status:d}\t"
-                          "checksum {msg.checksum:05d}\t"
-                          "timestamp {msg.header.stamp}",
-                          msg=msg)
-            connections[ns] = msg.header.stamp
-            pub.publish(msg)
+            rospy.logdebug("c {c}\t"
+                           "seq {msg.seq:03d}\t"
+                           "status {msg.framing_status:d}\t"
+                           "checksum {msg.checksum:05d}\t"
+                           "timestamp {msg.header.stamp}".format(c=c, msg=msg))
+
+            # Is valid
+            if msg.framing_status == Mavlink.FRAMING_OK:
+                if pub[0] is None or (msg.seq - pub[0] + 254) % 255 < 128:
+                    pub[0] = msg.seq
+                    pub[1].publish(msg)
+                    rospy.logdebug("-> publish from %s", c)
+                connections[ns] = rospy.Time.now()
         return cb
 
 
