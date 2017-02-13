@@ -1,0 +1,18 @@
+version: '2'
+services:
+  mavproxy:
+    network-mode: host
+    image: mavproxy
+    command: mavproxy.py --master=udpout:192.168.201.24:14555 --master=udpout:192.168.201.73:14555 --out=:14551 --out=192.168.201.59:14550
+  merger:
+    build: .
+    network-mode: host
+    image: mavros:merger
+    volumes:
+      - ./logs:/root/.ros/log:rw
+      - .:/home/root/catkin_ws/src/mavros_merger
+    command: roslaunch mavros_merger main-mavlink.launch
+    env_file:
+      - ros.env
+    depends_on:
+      - mavproxy

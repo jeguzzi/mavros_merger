@@ -1,14 +1,32 @@
 <launch>
   <node pkg="mavros_merger" type="mavros_merger_node.py" name="mavros_merger" output="screen" clear_params="true">
-     <rosparam param="controllers">
-- node21
-- node22
-     </rosparam>
-     <rosparam param="drones">
-r1: rover_0
-     </rosparam>
+    <rosparam param="controllers">
+      - node21
+      - node22
+    </rosparam>
+    <rosparam param="drones">
+      r1: rover_0
+    </rosparam>
   </node>
-  <node pkg="mavros" type="gcs_bridge" name="gcs_bridge" output="screen" ns="rover_0">
-     <param name="gcs_url" value="udp://@192.168.201.59:14550"/>
+  <node pkg="mavros" type="gcs_bridge" name="gcs_bridge" required="true" output="screen" ns="rover_0" clear_params="true">
+    <param name="gcs_url" value="udp://@127.0.0.1:14550"/>
   </node>
+  <!-- <node pkg="mavros" type="gcs_bridge" name="gcs_bridge" output="screen" ns="rover_0" clear_params="true">
+     <param name="gcs_url" value="udp://:12321@:14552"/>
+  </node> -->
+
+  <node pkg="mavros" type="mavros_node" name="mavros" required="true" clear_params="true" output="screen" ns="rover_0">
+    <param name="fcu_url" value="udp://:14551@"/>
+    <param name="gcs_url" value=""/>
+    <param name="target_system_id" value="1"/>
+    <param name="target_component_id" value="1"/>
+
+    <!-- load blacklist, config -->
+    <rosparam command="load" file="$(find mavros_merger)/config/pluginlists.yaml"/>
+    <rosparam command="load" file="$(find mavros_merger)/config/config.yaml"/>
+
+    <remap from="mavlink/from" to="mavlink/from_"/>
+    <remap from="mavlink/to" to="mavlink/to_"/>
+  </node>
+
 </launch>

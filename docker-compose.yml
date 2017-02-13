@@ -2,13 +2,14 @@ version: '2'
 services:
   merger:
     network-mode: host
-    image: mavros_merger
+    image: mavros:merger
     volumes:
       - ./logs:/root/.ros/log:rw
       - .:/home/root/catkin_ws/src/mavros_merger
     command: roslaunch mavros_merger main.launch
-   #  ports:
-   #    - "14550:14550/udp"
-    environment:
-      - "ROS_IP=192.168.201.4"
-      - "ROS_MASTER_URI=http://192.168.201.4:11311"
+    env_file:
+      - ros.env  
+  mavproxy:
+    network-mode: host
+    image: mavproxy
+    command: mavproxy.py --master=:14550 --out=:14551 --out=:192.168.201.59:14550

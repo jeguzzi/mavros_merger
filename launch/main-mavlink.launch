@@ -1,0 +1,12 @@
+<launch>
+  <node pkg="mavros" type="mavros_node" name="mavros" required="true" clear_params="true" output="screen" ns="rover_0">
+    <param name="fcu_url" value="udp://:14551@"/>
+    <param name="gcs_url" value=""/>
+    <param name="target_system_id" value="1"/>
+    <param name="target_component_id" value="1"/>
+    <!-- load blacklist, config -->
+    <rosparam command="load" file="$(find mavros)/launch/apm_pluginlists.yaml"/>
+    <rosparam command="load" file="$(find mavros_merger)/config/config.yaml"/>
+  </node>
+
+</launch>

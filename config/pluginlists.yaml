@@ -1,0 +1,7 @@
+plugin_blacklist:
+# all
+- '*'
+
+plugin_whitelist:
+- 'global_position'
+- 'sys_status'
