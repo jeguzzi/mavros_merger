@@ -1,12 +1,15 @@
 version: '2'
 services:
   mavproxy:
-    network-mode: host
+    network_mode: host
     image: mavproxy
+    build: ../mavproxy
     command: mavproxy.py --master=udpout:192.168.201.24:14555 --master=udpout:192.168.201.73:14555 --out=:14551 --out=192.168.201.59:14550
   merger:
-    build: .
-    network-mode: host
+    build:
+      dockerfile: docker/Dockerfile
+      context: ../..
+    network_mode: host
     image: mavros:merger
     volumes:
       - ./logs:/root/.ros/log:rw

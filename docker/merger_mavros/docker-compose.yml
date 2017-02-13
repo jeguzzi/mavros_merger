@@ -1,15 +1,19 @@
 version: '2'
 services:
   merger:
-    network-mode: host
+    build:
+      context: ../..
+      dockerfile: docker/Dockerfile
+    network_mode: host
     image: mavros:merger
     volumes:
       - ./logs:/root/.ros/log:rw
-      - .:/home/root/catkin_ws/src/mavros_merger
+      - .:/root/catkin_ws/src/mavros_merger
     command: roslaunch mavros_merger main.launch
     env_file:
-      - ros.env  
+      - ros.env
   mavproxy:
-    network-mode: host
+    build: ../mavproxy
+    network_mode: host
     image: mavproxy
     command: mavproxy.py --master=:14550 --out=:14551 --out=:192.168.201.59:14550
