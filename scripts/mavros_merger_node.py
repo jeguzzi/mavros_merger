@@ -19,20 +19,24 @@ class Merger(object):
         self.connections = {}
         rospy.loginfo("%s %s", drones, controllers)
 
-        for c in controllers:
-            c_uri = "{c}/connections".format(**locals())
-            self.connections[c] = ({}, rospy.Publisher(c_uri, ConnectionArray,
-                                                       queue_size=1))
+        for controller in controllers:
+            ns = controller['ns']
+            c_uri = "{ns}/connections".format(**locals())
+            self.connections[ns] = ({}, rospy.Publisher(c_uri, ConnectionArray,
+                                                        queue_size=1))
 
-        for uid, ns in drones.items():
+        for drone in drones:
+            ns = drone['ns']
+            uid = drone['xbee']
             s_uri = "{uid}/mavlink/from".format(**locals())
             d_uri = "{ns}/mavlink/from".format(**locals())
             self.pubs[uid] = [None,
                               rospy.Publisher(d_uri, Mavlink, queue_size=5)]
-            for c in controllers:
-                uri = "{c}/{s_uri}".format(**locals())
+            for controller in controllers:
+                c_ns = controller['ns']
+                uri = "{c_ns}/{s_uri}".format(**locals())
                 rospy.Subscriber(uri, Mavlink,
-                                 self.has_received_mavlink(c, uid, ns))
+                                 self.has_received_mavlink(c_ns, uid, ns))
         rospy.Timer(rospy.Duration(1), self.pub_connections, oneshot=False)
         rospy.spin()
 

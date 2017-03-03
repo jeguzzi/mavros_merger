@@ -5,7 +5,7 @@ services:
       context: ../..
       dockerfile: docker/Dockerfile
     network_mode: host
-    image: mavros:merger
+    image: jeguzzi/df:mavros_merger
     volumes:
       - ./logs:/root/.ros/log:rw
       - .:/root/catkin_ws/src/mavros_merger
