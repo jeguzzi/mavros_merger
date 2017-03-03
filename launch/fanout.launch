@@ -1,0 +1,21 @@
+<launch>
+    <arg name="ns" default="$(optenv ns rover_0)"/>
+    <arg name="out" default="$(optenv out 14550)"/>
+    <arg name="in" default="$(optenv in 14551)"/>
+    <group ns="$(arg ns)">
+        <node pkg="mavros" type="gcs_bridge" name="gcs_bridge" required="true" output="log" clear_params="true">
+            <param name="gcs_url" value="udp://@127.0.0.1:$(arg out)"/>
+        </node>
+        <node pkg="mavros" type="mavros_node" name="mavros" required="true" output="log" clear_params="true">
+            <param name="fcu_url" value="udp://127.0.0.1:$(arg in)@"/>
+            <param name="gcs_url" value=""/>
+            <param name="target_system_id" value="1"/>
+            <param name="target_component_id" value="1"/>
+            <!-- load blacklist, config -->
+            <rosparam command="load" file="$(find mavros_merger)/config/pluginlists.yaml"/>
+            <rosparam command="load" file="$(find mavros_merger)/config/config.yaml"/>
+            <remap from="mavlink/from" to="mavlink/from_"/>
+            <remap from="mavlink/to" to="mavlink/to_"/>
+        </node>
+    </group>
+</launch>

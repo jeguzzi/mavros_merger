@@ -1,0 +1,8 @@
+<launch>
+    <arg name="controllers" default="[{ns: node21}, {ns: node22}]"/>
+    <arg name="drones" default="[{ns:rover_0, xbee:r1}]"/>
+    <node pkg="mavros_merger" type="mavros_merger_node.py" name="mavros_merger" output="screen" clear_params="false">
+        <rosparam if="$(eval arg('controllers') != False)" param="controllers" subst_value="True"/>
+        <rosparam if="$(eval arg('drones') != False)" param="drones" subst_value="True"/>
+    </node>
+</launch>
